@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hzq.mappers.PurchaseCategoryMapper" >
+  <resultMap id="BaseResultMap" type="com.hzq.domain.PurchaseCategory" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="parent_id" property="parentId" jdbcType="INTEGER" />
+    <result column="name" property="name" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, parent_id, name
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from tb_purchase_category
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from tb_purchase_category
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.hzq.domain.PurchaseCategory" >
+    insert into tb_purchase_category (id, parent_id, name
+      )
+    values (#{id,jdbcType=INTEGER}, #{parentId,jdbcType=INTEGER}, #{name,jdbcType=VARCHAR}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.hzq.domain.PurchaseCategory" >
+    insert into tb_purchase_category
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="parentId != null" >
+        parent_id,
+      </if>
+      <if test="name != null" >
+        name,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="parentId != null" >
+        #{parentId,jdbcType=INTEGER},
+      </if>
+      <if test="name != null" >
+        #{name,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.hzq.domain.PurchaseCategory" >
+    update tb_purchase_category
+    <set >
+      <if test="parentId != null" >
+        parent_id = #{parentId,jdbcType=INTEGER},
+      </if>
+      <if test="name != null" >
+        name = #{name,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.hzq.domain.PurchaseCategory" >
+    update tb_purchase_category
+    set parent_id = #{parentId,jdbcType=INTEGER},
+      name = #{name,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+
+  <select id="selectAllParentCategories" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select
+    <include refid="Base_Column_List" />
+    from tb_purchase_category
+    where parent_id = 0
+  </select>
+
+  <select id="selectAllChildrenCategories" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select
+    <include refid="Base_Column_List" />
+    from tb_purchase_category
+    where parent_id != 0
+  </select>
+
+  <resultMap id="PurchaseIndexMap" type="com.hzq.domain.PurchaseCategory" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="parent_id" property="parentId" jdbcType="INTEGER" />
+    <result column="name" property="name" jdbcType="VARCHAR" />
+    <collection property="images" column="id" ofType="com.hzq.domain.PurchaseImage">
+        <id column="i_id" property="id" jdbcType="INTEGER" />
+        <result column="i_image_url" property="imageUrl" jdbcType="VARCHAR" />
+        <result column="i_category_id" property="categoryId" jdbcType="INTEGER" />
+        <result column="i_add_time" property="addTime" jdbcType="TIMESTAMP" />
+        <result column="i_keyword" property="keyword" jdbcType="VARCHAR" />
+    </collection>
+    <collection property="products" column="id" ofType="com.hzq.domain.PurchaseProduct">
+        <id column="p_id" property="id" jdbcType="INTEGER" />
+        <result column="p_category_id" property="categoryId" jdbcType="INTEGER" />
+        <result column="p_name" property="name" jdbcType="VARCHAR" />
+        <result column="p_subtitle" property="subtitle" jdbcType="VARCHAR" />
+        <result column="p_evaluation_nums" property="evaluationNums" jdbcType="INTEGER" />
+        <result column="p_good_evaluation_nums" property="goodEvaluationNums" jdbcType="INTEGER" />
+        <result column="p_main_image" property="mainImage" jdbcType="VARCHAR" />
+        <result column="p_sub_images" property="subImages" jdbcType="VARCHAR" />
+    </collection>
+  </resultMap>
+  <!--长sql加入缓存,ehcache-->
+  <cache type="org.mybatis.caches.ehcache.EhcacheCache"/>
+  <select id="selectAllPurchaseInfoByCategoryId" resultMap="PurchaseIndexMap" parameterType="java.lang.Integer">
+      select t.id,t.parent_id,t.name,i.id i_id,i.image_url i_image_url,i.category_id i_category_id,i.add_time i_add_time,
+      i.keyword i_keyword,p.id p_id,p.category_id p_category_id,p.name p_name,p.subtitle p_subtitle,
+      p.evaluation_nums p_evaluation_nums,p.good_evaluation_nums p_good_evaluation_nums,p.main_image p_main_image,p.sub_images p_sub_images
+      from tb_purchase_category t left join tb_purchase_image i on t.id=i.category_id
+      left join tb_purchase_product p on t.id=p.category_id
+      where t.id = #{categoryId,jdbcType=INTEGER}
+  </select>
+
+</mapper>

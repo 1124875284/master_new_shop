@@ -1,0 +1,178 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hzq.mappers.JournalismMapper" >
+  <resultMap id="BaseResultMap" type="com.hzq.domain.Journalism" >
+    <id column="id" property="id" jdbcType="VARCHAR" />
+    <result column="title" property="title" jdbcType="VARCHAR" />
+    <result column="author" property="author" jdbcType="VARCHAR" />
+    <result column="description" property="description" jdbcType="VARCHAR" />
+    <result column="images" property="images" jdbcType="VARCHAR" />
+    <result column="videos" property="videos" jdbcType="VARCHAR" />
+    <result column="publish_time" property="publishTime" jdbcType="TIMESTAMP" />
+    <result column="publish_name" property="publishName" jdbcType="VARCHAR" />
+    <result column="community_id" property="communityId" jdbcType="INTEGER" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, title, author, description, images, videos, publish_time, publish_name, community_id
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from tb_journalism
+    where id = #{id,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from tb_journalism
+    where id = #{id,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="com.hzq.domain.Journalism" >
+    insert into tb_journalism (id, title, author, 
+      description, images, videos, 
+      publish_time, publish_name, community_id
+      )
+    values (#{id,jdbcType=VARCHAR}, #{title,jdbcType=VARCHAR}, #{author,jdbcType=VARCHAR}, 
+      #{description,jdbcType=VARCHAR}, #{images,jdbcType=VARCHAR}, #{videos,jdbcType=VARCHAR}, 
+      #{publishTime,jdbcType=TIMESTAMP}, #{publishName,jdbcType=VARCHAR}, #{communityId,jdbcType=INTEGER}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.hzq.domain.Journalism" >
+    insert into tb_journalism
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="title != null" >
+        title,
+      </if>
+      <if test="author != null" >
+        author,
+      </if>
+      <if test="description != null" >
+        description,
+      </if>
+      <if test="images != null" >
+        images,
+      </if>
+      <if test="videos != null" >
+        videos,
+      </if>
+      <if test="publishTime != null" >
+        publish_time,
+      </if>
+      <if test="publishName != null" >
+        publish_name,
+      </if>
+      <if test="communityId != null" >
+        community_id,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=VARCHAR},
+      </if>
+      <if test="title != null" >
+        #{title,jdbcType=VARCHAR},
+      </if>
+      <if test="author != null" >
+        #{author,jdbcType=VARCHAR},
+      </if>
+      <if test="description != null" >
+        #{description,jdbcType=VARCHAR},
+      </if>
+      <if test="images != null" >
+        #{images,jdbcType=VARCHAR},
+      </if>
+      <if test="videos != null" >
+        #{videos,jdbcType=VARCHAR},
+      </if>
+      <if test="publishTime != null" >
+        #{publishTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="publishName != null" >
+        #{publishName,jdbcType=VARCHAR},
+      </if>
+      <if test="communityId != null" >
+        #{communityId,jdbcType=INTEGER},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.hzq.domain.Journalism" >
+    update tb_journalism
+    <set >
+      <if test="title != null" >
+        title = #{title,jdbcType=VARCHAR},
+      </if>
+      <if test="author != null" >
+        author = #{author,jdbcType=VARCHAR},
+      </if>
+      <if test="description != null" >
+        description = #{description,jdbcType=VARCHAR},
+      </if>
+      <if test="images != null" >
+        images = #{images,jdbcType=VARCHAR},
+      </if>
+      <if test="videos != null" >
+        videos = #{videos,jdbcType=VARCHAR},
+      </if>
+      <if test="publishTime != null" >
+        publish_time = #{publishTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="publishName != null" >
+        publish_name = #{publishName,jdbcType=VARCHAR},
+      </if>
+      <if test="communityId != null" >
+        community_id = #{communityId,jdbcType=INTEGER},
+      </if>
+    </set>
+    where id = #{id,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.hzq.domain.Journalism" >
+    update tb_journalism
+    set title = #{title,jdbcType=VARCHAR},
+      author = #{author,jdbcType=VARCHAR},
+      description = #{description,jdbcType=VARCHAR},
+      images = #{images,jdbcType=VARCHAR},
+      videos = #{videos,jdbcType=VARCHAR},
+      publish_time = #{publishTime,jdbcType=TIMESTAMP},
+      publish_name = #{publishName,jdbcType=VARCHAR},
+      community_id = #{communityId,jdbcType=INTEGER}
+    where id = #{id,jdbcType=VARCHAR}
+  </update>
+
+  <resultMap id="AllResultMap" type="com.hzq.domain.Journalism" >
+    <id column="id" property="id" jdbcType="VARCHAR" />
+    <result column="title" property="title" jdbcType="VARCHAR" />
+    <result column="author" property="author" jdbcType="VARCHAR" />
+    <result column="description" property="description" jdbcType="VARCHAR" />
+    <result column="images" property="images" jdbcType="VARCHAR" />
+    <result column="videos" property="videos" jdbcType="VARCHAR" />
+    <result column="publish_time" property="publishTime" jdbcType="TIMESTAMP" />
+    <result column="publish_name" property="publishName" jdbcType="VARCHAR" />
+    <result column="community_id" property="communityId" jdbcType="INTEGER"/>
+    <collection property="contents" column="id" ofType="com.hzq.domain.JournalismContent">
+      <id column="c_id" property="id"/>
+      <result column="c_image_url" property="imageUrl"/>
+      <result column="c_content" property="content"/>
+      <result column="c_video_url" property="videoUrl"/>
+    </collection>
+  </resultMap>
+
+  <select id="selectAllJournalismsById" resultMap="AllResultMap" parameterType="java.lang.String" >
+    select
+     j.id,j.title,j.author,j.description,j.images,j.videos,j.publish_time,j.publish_name,j.community_id,c.id as c_id,
+     c.image_url as c_image_url,c.content as c_content,c.video_url as c_video_url
+    from tb_journalism j
+    left join tb_journalism_content c
+    on j.id=c.journalism_id
+    where j.id = #{id,jdbcType=VARCHAR}
+  </select>
+
+  <select id="selectAllJournalisms" resultMap="AllResultMap" parameterType="java.lang.String" >
+    select
+     j.id,j.title,j.author,j.description,j.images,j.videos,j.publish_time,j.publish_name,j.community_id,c.id as c_id,
+     c.image_url as c_image_url,c.content as c_content,c.video_url as c_video_url
+    from tb_journalism j
+    left join tb_journalism_content c
+    on j.id=c.journalism_id
+  </select>
+</mapper>

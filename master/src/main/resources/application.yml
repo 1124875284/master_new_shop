@@ -1,0 +1,25 @@
+server:
+  port: 16002
+spring:
+  datasource:
+    driver-class-name: com.mysql.jdbc.Driver
+    url: jdbc:mysql://127.0.0.1:3306/shop?characterEncoding=utf-8&useSSL=false&serverTimezone=GMT%2B8&useUnicode=true&allowPublicKeyRetrieval=true
+    username: root
+    password: root
+
+  redis:
+    host: 127.0.0.1
+    password:
+    port: 6379
+  security:
+    user:
+      name: hzq
+      password: 123
+mybatis:
+  mapper-locations: classpath:com.hzq.mappers/*.xml
+  type-aliases-package: com.hzq.domain
+  config-location: classpath:mybatis/mybatis-config.xml
+logging:
+  level:
+    com.hzq.domain: DEBUG
+    com.hzq.service.impl: DEBUG
