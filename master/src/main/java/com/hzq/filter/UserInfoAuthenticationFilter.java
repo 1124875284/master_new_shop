@@ -15,7 +15,7 @@ import java.io.IOException;
 
 public class UserInfoAuthenticationFilter extends AbstractAuthenticationProcessingFilter {
     public UserInfoAuthenticationFilter() {
-        super(new AntPathRequestMatcher("/user/login", "POST"));
+        super(new AntPathRequestMatcher("/user/login", "POST",true));
     }
 
     @Override

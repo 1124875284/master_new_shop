@@ -42,7 +42,12 @@ public class UserController {
         return ResponseResult.createByErrorMessage("获取用户信息失败");
     }
 
-
+    /**
+     * 注册用户
+     * @param userDto
+     * @param result
+     * @return
+     */
     @PostMapping(value = "/registry",produces = "application/json;charset=UTF-8",consumes = "application/json;charset=UTF-8")
     @ResponseBody
     public ResponseResult registryUserInfo(@Valid @RequestBody UserDto userDto,
@@ -54,7 +59,12 @@ public class UserController {
         return ResponseResult.createByErrorMessage("用户注册失败");
     }
 
-
+    /**
+     * 修改用户
+     * @param userVo
+     * @param result
+     * @return
+     */
     @PutMapping(value = "/update",produces = "application/json;charset=UTF-8",consumes = "application/json;charset=UTF-8")
     @ResponseBody
     public ResponseResult updateUserInfo(@Valid @RequestBody UserVo userVo, BindingResult result){
@@ -75,7 +85,12 @@ public class UserController {
     }
 
 
-
+    /**
+     * 发送邮件
+     * @param nickname
+     * @param email
+     * @return
+     */
     @PostMapping("/send/mail")
     @ResponseBody
     public ResponseResult<String> sendMail(@RequestParam(value = "nickname")String nickname, @RequestParam(value = "email")String email){
@@ -83,6 +98,10 @@ public class UserController {
         return ResponseResult.createBySuccess("发送邮件成功");
     }
 
+    /**
+     * 查看授权信息
+     * @return
+     */
     @GetMapping(value = "/token",produces = "application/json;charset=UTF-8")
     @ResponseBody
     public ResponseResult getUserToken(){
@@ -97,12 +116,5 @@ public class UserController {
         tokenInfo.put("authorities",authentication.getAuthorities());
         return ResponseResult.createBySuccess(tokenInfo);
     }
-    @GetMapping("/hello")
-    @ResponseBody
-    public String a(){
-        String a="a";
-        String b="jlkjlkj";
-        System.out.println(a+b);
-        return "/user/find";
-    }
+
 }

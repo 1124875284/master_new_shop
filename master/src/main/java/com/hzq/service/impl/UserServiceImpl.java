@@ -3,6 +3,7 @@ package com.hzq.service.impl;
 import com.google.common.base.Joiner;
 import com.google.common.base.MoreObjects;
 import com.google.common.base.Strings;
+import com.google.common.collect.ImmutableList;
 import com.hzq.constant.RedisConstant;
 import com.hzq.domain.CryptPassword;
 import com.hzq.domain.User;
@@ -15,11 +16,14 @@ import com.hzq.security.UserInfoService;
 import com.hzq.service.UserService;
 import com.hzq.util.AuthenticationInfoUtil;
 import com.hzq.util.JsonSerializableUtil;
+import com.hzq.util.MailSenderUtil;
 import com.hzq.util.ParamValidatorUtil;
 import com.hzq.vo.PosterVo;
 import com.hzq.vo.UserVo;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.RandomUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -32,7 +36,9 @@ import org.springframework.validation.BindingResult;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
+import java.util.stream.Collectors;
 
 import static com.hzq.constant.RedisConstant.EMAIL_VALIDATE_CODE_PREFIX;
 
@@ -59,8 +65,8 @@ public class UserServiceImpl implements UserService {
     @Autowired
     private UserInfoService userInfoService;
 
-//    @Autowired
-//    private MailSenderUtil mailSenderUtil;
+    @Autowired
+    private MailSenderUtil mailSenderUtil;
 
     @Autowired
     private PasswordEncoder passwordEncoder;
@@ -154,38 +160,34 @@ public class UserServiceImpl implements UserService {
             userInfoService.deleteUserLoginInfo(rawNickname);
             return vo;
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error("修改用户信息失败");
         }
         return null;
     }
 
     @Override
     public void sendEmail(String nickname,String email) {
-//        try {
-//            User user = AuthenticationInfoUtil.getUser(userMapper, memcachedClient);
-//            if (!StringUtils.equals(user.getNickname(),nickname)){
-//                throw new ParamException("当前用户昵称错误");
-//            }
-//            if (StringUtils.isBlank(user.getEmail())){
-//                throw new ParamException("您还未绑定邮箱,请通过更新用户信息修改您的邮箱");
-//            }
-//            if (!StringUtils.equals(email,user.getEmail())){
-//                throw new ParamException("当前邮箱和您绑定过的邮箱地址不一致");
-//            }
-//            ImmutableList<Integer> immutableList = ImmutableList.of(RandomUtils.nextInt(1,10)
-//                    ,RandomUtils.nextInt(1,10),RandomUtils.nextInt(1,10),RandomUtils.nextInt(1,10),RandomUtils.nextInt(1,10),
-//                    RandomUtils.nextInt(1,10));
-//            String validateCode = immutableList.parallelStream().map(String::valueOf).collect(Collectors.joining(""));
-//            stringRedisTemplate.opsForValue().set(EMAIL_VALIDATE_CODE_PREFIX+nickname,validateCode);
-//            stringRedisTemplate.expire(EMAIL_VALIDATE_CODE_PREFIX+nickname,10, TimeUnit.MINUTES);
-//            mailSenderUtil.sendSimpleMail(email,"【城风网验证码】","亲，感谢您选择城风社区平台。您的本次验证码为:"+validateCode);
-//        } catch (InterruptedException e) {
-//            e.printStackTrace();
-//        } catch (MemcachedException e) {
-//            e.printStackTrace();
-//        } catch (TimeoutException e) {
-//            e.printStackTrace();
-//        }
+        try {
+            User user = AuthenticationInfoUtil.getUser(userMapper, stringRedisTemplate);
+            if (!StringUtils.equals(user.getNickname(),nickname)){
+                throw new ParamException("当前用户昵称错误");
+            }
+            if (StringUtils.isBlank(user.getEmail())){
+                throw new ParamException("您还未绑定邮箱,请通过更新用户信息修改您的邮箱");
+            }
+            if (!StringUtils.equals(email,user.getEmail())){
+                throw new ParamException("当前邮箱和您绑定过的邮箱地址不一致");
+            }
+            ImmutableList<Integer> immutableList = ImmutableList.of(RandomUtils.nextInt(1,10)
+                    ,RandomUtils.nextInt(1,10),RandomUtils.nextInt(1,10),RandomUtils.nextInt(1,10),RandomUtils.nextInt(1,10),
+                    RandomUtils.nextInt(1,10));
+            String validateCode = immutableList.parallelStream().map(String::valueOf).collect(Collectors.joining(""));
+            stringRedisTemplate.opsForValue().set(EMAIL_VALIDATE_CODE_PREFIX+nickname,validateCode);
+            stringRedisTemplate.expire(EMAIL_VALIDATE_CODE_PREFIX+nickname,10, TimeUnit.MINUTES);
+            mailSenderUtil.sendSimpleMail(email,"【城风网验证码】","亲，感谢您选择城风社区平台。您的本次验证码为:"+validateCode);
+        } catch (Exception e) {
+
+        }
     }
 
 
