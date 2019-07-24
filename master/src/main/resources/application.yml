@@ -11,10 +11,19 @@ spring:
     host: 127.0.0.1
     password:
     port: 6379
-  security:
-    user:
-      name: hzq
-      password: 123
+
+#  mail:
+#    host: smtp.qq.com
+#    username: 1124875284@qq.com
+#    password: 199qqqqq
+#    default-encoding: utf-8
+
+memcached:
+  servers: 127.0.0.1:11111
+  # 连接池
+  poolSize: 10
+  #操作超时时间
+  opTimeout: 6000
 mybatis:
   mapper-locations: classpath:com.hzq.mappers/*.xml
   type-aliases-package: com.hzq.domain
